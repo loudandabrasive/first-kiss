@@ -2,7 +2,7 @@ require 'tile-maps'
 
 local World = {}
 local WorldObjects = {}
-local PlayerSpeed = 300
+local PlayerSpeed = 100
 
 function love.load()
 	love.filesystem.load('field-map.lua')()
@@ -28,19 +28,20 @@ end
 
 function love.update(dt)
 	World:update(dt)
+	keyboardThePlayer()
 end
 
-function love.keypressed( key )
-   if key == "right" then
+function keyboardThePlayer()
+   if love.keyboard.isDown("right") then
 	WorldObjects.player.body:applyForce(PlayerSpeed,0) 
    end
-   if key == "left" then
+   if love.keyboard.isDown("left") then
 	WorldObjects.player.body:applyForce(-PlayerSpeed,0)
    end
-   if key == "up" then
+   if love.keyboard.isDown("up") then
 	WorldObjects.player.body:applyForce(0,-PlayerSpeed)
    end
-   if key == "down" then
+   if love.keyboard.isDown("down") then
 	WorldObjects.player.body:applyForce(0,PlayerSpeed)
    end
 end
