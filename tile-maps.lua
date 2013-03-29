@@ -1,9 +1,9 @@
 local TileSize = 0
 local TileSetImage = {}
-local TileSet = {}
-local GameTilesMap = {}
+local TileChars = {}
+local MapToDraw = {}
 
-function newMap(tileSize, tileSetPath, mapString, quadConfig)
+function newMap(tileSize, tileSetPath, drawString, objectString, quadConfig)
 	TileSize = tileSize
 	TileSetImage = love.graphics.newImage(tileSetPath);
 	
@@ -11,15 +11,17 @@ function newMap(tileSize, tileSetPath, mapString, quadConfig)
 	local tileSetHeight = TileSetImage:getHeight()
 	
 	for _,tile in ipairs(quadConfig) do
-		TileSet[tile[1]] = love.graphics.newQuad(tile[2], tile[3], tileSize, tileSize, tileSetWidth, tileSetHeight)
+		TileChars[tile[1]] = love.graphics.newQuad(tile[2], tile[3], tileSize, tileSize, tileSetWidth, tileSetHeight)
 	end
 	
-	parseMap(mapString, GameTilesMap)
+	local objectMap = {}
+	parseMap(objectString, objectMap)
+	loadObjects(objectMap)
+	parseMap(drawString, MapToDraw)
 end
 
 function parseMap(mapString, tileTable)
 	local width = #(mapString:match("[^\n]+"))
-	
 	for rows = 1,width do tileTable[rows] = {} end
 
 	local r,c = 1,1
@@ -34,12 +36,26 @@ function parseMap(mapString, tileTable)
 	end
 end
 
+function loadObjects(objectMap)
+	for c,column in pairs(objectMap) do
+		for r,char in pairs(column) do
+			if(char == '#' or char == 'X') then
+				local x,y = (c-1)*TileSize, (r-1)*TileSize
+				local box = {}
+				box.body = love.physics.newBody(World,x,y, "static")
+				box.shape = love.physics.newRectangleShape(TileSize,TileSize)
+				box.fixture = love.physics.newFixture(box.body, box.shape, 1)
+			end
+		end
+	end
+end
+
 function drawMap()
-	for c,column in pairs(GameTilesMap) do
+	for c,column in pairs(MapToDraw) do
 		for r,char in pairs(column) do
 			local x,y = (c-1)*TileSize, (r-1)*TileSize
-			love.graphics.print(char, x, y)
-			love.graphics.drawq(TileSetImage, TileSet[char], x, y)
+			love.graphics.drawq(TileSetImage, TileChars[char], x, y)
+			--love.graphics.print(char, x, y)
 		end
 	end
 end

@@ -1,4 +1,4 @@
-local mapString = [[
+local drawing = [[
 X#######################X
 X        f              X
 X                f      X
@@ -20,6 +20,28 @@ X           f    f  #   X
 #########################
 ]]
 
+local objects = [[
+X#######################X
+X                       X
+X                       X
+X    #    #             X
+X          XX#          X
+X          ##           X
+X                   #   X
+X          #            X
+X                       X
+X          X            X
+X          #            X
+X                       X
+X          #            X
+X                       X
+X               #     X X
+X      #            X # X
+X                   X   X
+X                   #   X
+#########################
+]]
+
 local mapConfig = {	
 	{' ',  0,  0 }, -- 1 = grass 
 	{'#', 32,  0 }, -- 2 = box
@@ -27,4 +49,4 @@ local mapConfig = {
 	{'X', 32, 32 }  -- 4 = boxTop
 }
 
-newMap(32, 'assets/countryside.png', mapString, mapConfig)
+newMap(32, 'assets/countryside.png', drawing, objects, mapConfig)
