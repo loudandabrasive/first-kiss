@@ -3,7 +3,8 @@ first-kiss
 
 playground for trying stuff out in lua with LÖVE.
 
-Tile system is straight up [this tutorial](https://github.com/kikito/love-tile-tutorial).
+Ditched the Tile system, took the camera from [this tutorial](http://nova-fusion.com/2011/04/19/cameras-in-love2d-part-1-the-basics/).
 Now with some LÖVEly physics learned from [its wiki] (http://love2d.org/wiki/).
+Took 
 
-It's a real mess in there right now, between the hard globals and loading objects and backdrops all at once in some crazy cross-file bananas remix. Might try to clean it up. We'll see.
+It's a real mess in there right now. Might try to clean it up. We'll see.

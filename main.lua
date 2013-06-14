@@ -1,4 +1,4 @@
-require 'tile-maps'
+require 'camera'
 
 World = {}
 local WorldObjects = {}
@@ -6,13 +6,24 @@ local PlayerSpeed = 100
 
 function love.load()
 	loadPhysics()
-	love.filesystem.load('maps.lua')()
 	PlayerImage = love.graphics.newImage('assets/brave-hero.png')
+
+  for i = 1, 10 do
+	x = math.random(100, love.graphics.getWidth() * 2)
+	y = math.random(100, love.graphics.getHeight() * 2)
+	width = math.random(100, 300)
+	height = math.random(100, 300)
+	envBox = {}
+	envBox.body = love.physics.newBody(World,x,y,"static")
+	envBox.shape = love.physics.newRectangleShape(width,height)
+	envBox.fixture = love.physics.newFixture(envBox.body, envBox.shape)
+    table.insert(WorldObjects, envBox)
+  end
 end
 
 function loadPhysics()
 	love.physics.setMeter(32) --32px / m
-	World = love.physics.newWorld(0, 0, true)
+	World = love.physics.newWorld(0, 20, true)
 	player = {}
 	player.body = love.physics.newBody(World,64,64, "dynamic")
 	player.shape = love.physics.newRectangleShape(30,30)
@@ -21,13 +32,20 @@ function loadPhysics()
 end
 
 function love.draw()
-	drawMap()
-	love.graphics.draw(PlayerImage, WorldObjects.player.body:getX(), WorldObjects.player.body:getY(), 0, 0.5)
+	camera:set()
+	love.graphics.setColor( { 255, 255, 255 } )
+	for _, o in pairs(WorldObjects) do
+    love.graphics.polygon("fill", o.body:getWorldPoints(o.shape:getPoints()))
+  end
+	
+	camera:unset()
 end
 
 function love.update(dt)
 	World:update(dt)
 	keyboardThePlayer()
+	
+	camera:setPosition(player.body:getX() - 32, player.body:getY() - 32)
 end
 
 function keyboardThePlayer()
