@@ -4,26 +4,41 @@ World = {}
 local WorldObjects = {}
 local PlayerSpeed = 100
 
-function love.load()
-	loadPhysics()
-	PlayerImage = love.graphics.newImage('assets/brave-hero.png')
+local screenWidth = 0
+local screenHeight = 0
 
-  for i = 1, 10 do
-	x = math.random(100, love.graphics.getWidth() * 2)
-	y = math.random(100, love.graphics.getHeight() * 2)
-	width = math.random(100, 300)
-	height = math.random(100, 300)
-	envBox = {}
-	envBox.body = love.physics.newBody(World,x,y,"static")
-	envBox.shape = love.physics.newRectangleShape(width,height)
-	envBox.fixture = love.physics.newFixture(envBox.body, envBox.shape)
-    table.insert(WorldObjects, envBox)
-  end
+function love.load()
+	screenWidth = love.graphics.getWidth()
+	screenHeight = love.graphics.getHeight()
+
+	love.physics.setMeter(32)
+	World = love.physics.newWorld(0, 20, true)
+	
+	loadBodies()
+	loadPlayer()
 end
 
-function loadPhysics()
-	love.physics.setMeter(32) --32px / m
-	World = love.physics.newWorld(0, 20, true)
+function loadBodies()
+	floor = {}
+	floor.body = love.physics.newBody(World,0,screenHeight-100,"static")
+	floor.shape = love.physics.newRectangleShape(screenWidth,60)
+	floor.fixture = love.physics.newFixture(floor.body, floor.shape)
+    table.insert(WorldObjects, floor)
+
+    for i = 1, 10 do
+		x = math.random(0, screenWidth  * 2)
+		y = math.random(100, screenHeight * 2)
+		width = math.random(100, 300)
+		height = math.random(100, 300)
+		envBox = {}
+		envBox.body = love.physics.newBody(World,x,y,"static")
+		envBox.shape = love.physics.newRectangleShape(width,height)
+		envBox.fixture = love.physics.newFixture(envBox.body, envBox.shape)
+		table.insert(WorldObjects, envBox)
+	end
+end
+
+function loadPlayer()
 	player = {}
 	player.body = love.physics.newBody(World,64,64, "dynamic")
 	player.shape = love.physics.newRectangleShape(30,30)
@@ -45,7 +60,7 @@ function love.update(dt)
 	World:update(dt)
 	keyboardThePlayer()
 	
-	camera:setPosition(player.body:getX() - 32, player.body:getY() - 32)
+	camera:setPosition(player.body:getX() - screenWidth/2, player.body:getY() - screenHeight/2)
 end
 
 function keyboardThePlayer()
