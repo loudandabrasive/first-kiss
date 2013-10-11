@@ -1,6 +1,8 @@
-Player = {}
+require 'entity'
 
-function Player:init(speed)
+Player = Entity:new()
+
+function Player:init()
 	local player = Player:new()
 	player.speed = 100
 	player.body = love.physics.newBody(World,64,64, "dynamic")
@@ -33,11 +35,4 @@ function Player:updateInput()
    if love.keyboard.isDown("down") then
 		self.body:applyForce(0,self.speed)
    end
-end
-
-function Player:new(p)
-	local player = player or {}
-	setmetatable(player, self)
-	self.__index = self
-	return player
 end
