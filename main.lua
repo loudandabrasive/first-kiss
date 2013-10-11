@@ -1,9 +1,10 @@
 require 'camera'
 require 'box'
+require 'player'
 
 World = {}
 local Boxes = {}
-local PlayerSpeed = 100
+local player = {}
 
 local screenWidth = 0
 local screenHeight = 0
@@ -15,12 +16,12 @@ function love.load()
 	love.physics.setMeter(32)
 	World = love.physics.newWorld(0, 20, true)
 	
+	player = Player:init()
 	loadBodies()
-	loadPlayer()
 end
 
 function loadBodies()
-	floor = Box:create(0, screenHeight-100, screenWidth, 60)
+	local floor = Box:create(0, screenHeight-100, screenWidth, 60)
     table.insert(Boxes, floor)
 
     for i = 1, 10 do
@@ -33,21 +34,9 @@ function loadBodies()
 	end
 end
 
-function loadPlayer()
-	player = {}
-	player.body = love.physics.newBody(World,64,64, "dynamic")
-	player.shape = love.physics.newRectangleShape(30,30)
-	player.fixture = love.physics.newFixture(player.body, player.shape, 0.65)
-end
-
-function drawPlayer()
-	love.graphics.setColor( { 0, 255, 100 } )
-	love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))
-end
-
 function love.draw()
 	camera:set()
-	drawPlayer()
+	player:draw()
 	for _, o in pairs(Boxes) do
     	o:draw()
   	end
@@ -56,22 +45,7 @@ end
 
 function love.update(dt)
 	World:update(dt)
-	keyboardThePlayer()
+	player:update(dt)
 	
 	camera:setPosition(player.body:getX() - screenWidth/2, player.body:getY() - screenHeight/2)
-end
-
-function keyboardThePlayer()
-   if love.keyboard.isDown("right") then
-		player.body:applyForce(PlayerSpeed,0) 
-   end
-   if love.keyboard.isDown("left") then
-		player.body:applyForce(-PlayerSpeed,0)
-   end
-   if love.keyboard.isDown("up") then
-		player.body:applyForce(0,-PlayerSpeed)
-   end
-   if love.keyboard.isDown("down") then
-		player.body:applyForce(0,PlayerSpeed)
-   end
 end
