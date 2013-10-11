@@ -1,7 +1,8 @@
 require 'camera'
+require 'box'
 
 World = {}
-local WorldObjects = {}
+local Boxes = {}
 local PlayerSpeed = 100
 
 local screenWidth = 0
@@ -19,22 +20,16 @@ function love.load()
 end
 
 function loadBodies()
-	floor = {}
-	floor.body = love.physics.newBody(World,0,screenHeight-100,"static")
-	floor.shape = love.physics.newRectangleShape(screenWidth,60)
-	floor.fixture = love.physics.newFixture(floor.body, floor.shape)
-    table.insert(WorldObjects, floor)
+	floor = Box:create(0, screenHeight-100, screenWidth, 60)
+    table.insert(Boxes, floor)
 
     for i = 1, 10 do
-		x = math.random(0, screenWidth  * 2)
-		y = math.random(100, screenHeight * 2)
-		width = math.random(100, 300)
-		height = math.random(100, 300)
-		envBox = {}
-		envBox.body = love.physics.newBody(World,x,y,"static")
-		envBox.shape = love.physics.newRectangleShape(width,height)
-		envBox.fixture = love.physics.newFixture(envBox.body, envBox.shape)
-		table.insert(WorldObjects, envBox)
+		local x = math.random(0, screenWidth  * 2)
+		local y = math.random(100, screenHeight * 2)
+		local width = math.random(100, 300)
+		local height = math.random(100, 300)
+		local envBox = Box:create(x,y,width,height)
+		table.insert(Boxes, envBox)
 	end
 end
 
@@ -43,16 +38,19 @@ function loadPlayer()
 	player.body = love.physics.newBody(World,64,64, "dynamic")
 	player.shape = love.physics.newRectangleShape(30,30)
 	player.fixture = love.physics.newFixture(player.body, player.shape, 0.65)
-	WorldObjects.player = player
+end
+
+function drawPlayer()
+	love.graphics.setColor( { 0, 255, 100 } )
+	love.graphics.polygon("fill", player.body:getWorldPoints(player.shape:getPoints()))
 end
 
 function love.draw()
 	camera:set()
-	love.graphics.setColor( { 255, 255, 255 } )
-	for _, o in pairs(WorldObjects) do
-    love.graphics.polygon("fill", o.body:getWorldPoints(o.shape:getPoints()))
-  end
-	
+	drawPlayer()
+	for _, o in pairs(Boxes) do
+    	o:draw()
+  	end
 	camera:unset()
 end
 
@@ -65,15 +63,15 @@ end
 
 function keyboardThePlayer()
    if love.keyboard.isDown("right") then
-	WorldObjects.player.body:applyForce(PlayerSpeed,0) 
+		player.body:applyForce(PlayerSpeed,0) 
    end
    if love.keyboard.isDown("left") then
-	WorldObjects.player.body:applyForce(-PlayerSpeed,0)
+		player.body:applyForce(-PlayerSpeed,0)
    end
    if love.keyboard.isDown("up") then
-	WorldObjects.player.body:applyForce(0,-PlayerSpeed)
+		player.body:applyForce(0,-PlayerSpeed)
    end
    if love.keyboard.isDown("down") then
-	WorldObjects.player.body:applyForce(0,PlayerSpeed)
+		player.body:applyForce(0,PlayerSpeed)
    end
 end
